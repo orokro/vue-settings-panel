@@ -78,6 +78,12 @@ const specs = {
 const activeSpecName = ref('default')
 const activeTheme = ref({})
 const showSidebarGlobal = ref(true)
+const isReactivityTest = ref(window.location.hash === '#reactivity-test')
+
+// Simple hash routing
+window.addEventListener('hashchange', () => {
+  isReactivityTest.value = window.location.hash === '#reactivity-test'
+})
 
 const settingsState = reactive({
   driverType: "ASIO",
@@ -123,20 +129,36 @@ const updateSpec = (name) => {
     showSidebarGlobal.value = true
   }
 }
+
+const toggleReactivityTest = () => {
+  window.location.hash = isReactivityTest.value ? '' : '#reactivity-test'
+}
 </script>
 
 <template>
   <div class="app-wrapper">
-    <ThemeSwitcher 
-      v-model:theme="activeTheme" 
-      :currentTheme="activeTheme"
-      :showSidebar="showSidebarGlobal" 
-      @update:showSidebar="updateShowSidebar"
-      @update:spec="updateSpec"
-    />
-    
-    <div class="app-container">
+    <div class="header-actions">
+      <ThemeSwitcher
+        v-model:theme="activeTheme"
+        :currentTheme="activeTheme"
+        :showSidebar="showSidebarGlobal"
+        @update:showSidebar="updateShowSidebar"
+        @update:spec="updateSpec"
+      />
+      <button @click="toggleReactivityTest" class="reactivity-toggle">
+        {{ isReactivityTest ? 'Exit Reactivity Test' : 'Test Reactivity (Side-by-Side)' }}
+      </button>
+    </div>
+
+    <div class="app-container" :class="{ 'reactivity-test': isReactivityTest }">
       <VueOptionsPanel
+        :settings="settingsState"
+        :specification="currentSpec"
+        :themeColors="activeTheme"
+        @settings-changed="handleSettingsChanged"
+      />
+      <VueOptionsPanel
+        v-if="isReactivityTest"
         :settings="settingsState"
         :specification="currentSpec"
         :themeColors="activeTheme"
@@ -163,6 +185,30 @@ body, html {
   display: flex;
 }
 
+.header-actions {
+  display: flex;
+  align-items: stretch;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+}
+
+.reactivity-toggle {
+  background: #00abae;
+  color: white;
+  border: none;
+  padding: 0 20px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.reactivity-toggle:hover {
+  background: #008f91;
+}
+
 .app-wrapper {
   display: flex;
   flex-direction: column;
@@ -172,7 +218,8 @@ body, html {
 
 .app-container {
   flex: 1;
-  width: 1000px;
+  width: 1500px;
+  border: 2px solid red;
   max-width: 95vw;
   height: 700px;
   max-height: 80vh;
@@ -181,5 +228,22 @@ body, html {
   border-radius: 12px;
   overflow: hidden;
   background: #111;
+  transition: all 0.3s ease;
+}
+
+.app-container.reactivity-test {
+  width: 100%;
+  max-width: 100vw;
+  height: 100%;
+  max-height: 100vh;
+  margin: 0;
+  border-radius: 0;
+  display: flex;
+  gap: 1px;
+  background: #444; /* Divider */
+}
+
+.app-container.reactivity-test > * {
+  flex: 1;
 }
 </style>
