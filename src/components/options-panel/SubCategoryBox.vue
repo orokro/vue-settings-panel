@@ -77,10 +77,17 @@ const mode = computed(() => specification.value.search?.nonMatchSettings || 'gra
 <style lang="scss" scoped>
 .subcategory-box {
   background-color: var(--mc-subcategoryBgColor, #f9f9f9);
-  border: var(--mc-subcategoryBorder, none);
+  border: var(--mc-subcategoryBorder, 1px solid transparent);
   border-radius: 6px;
   padding: 16px;
   transition: opacity 0.3s;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+
+  &.blink {
+    animation: attention-blink 0.8s ease-in-out;
+    transition: none !important; /* Disable transitions during blink */
+  }
 
   .subcategory-header {
     margin-bottom: 12px;
@@ -97,6 +104,25 @@ const mode = computed(() => specification.value.search?.nonMatchSettings || 'gra
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+}
+
+@keyframes attention-blink {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    outline-color: transparent;
+  }
+  25% {
+    box-shadow: 0 0 0 3px var(--mc-attentionColor, #00abae);
+    outline-color: var(--mc-attentionColor, #00abae);
+  }
+  50% {
+    box-shadow: 0 0 0 1.5px var(--mc-attentionColor, #00abae);
+    outline-color: var(--mc-attentionColor, #00abae);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    outline-color: transparent;
   }
 }
 </style>

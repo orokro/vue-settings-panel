@@ -31,6 +31,7 @@ const themes = {
       textColor: '#333',
       categoryHeaderColor: '#222',
       categoryHeaderTextColor: '#fff',
+      attentionColor: '#4caf50',
     },
     range: {
       thumbColor: '#4caf50'
@@ -66,6 +67,7 @@ const themes = {
       subcategoryBorder: 'none',
       subcategoryBgColor: '#1a1a1a',
       subCategoryTextColor: '#aaa',
+      attentionColor: '#00abae',
     },
     toggle: {
       bgColor: '#444',
@@ -112,6 +114,7 @@ const themes = {
       subcategoryBorder: '1px dotted #00abae',
       subcategoryBgColor: '#ffffff',
       subCategoryTextColor: '#004d40',
+      attentionColor: '#007072',
     },
     toggle: {
       bgColor: '#b2ebf2',

@@ -5,7 +5,7 @@
         Represents a sub-category item in the navigation sidebar.
 -->
 <script setup>
-import { inject, computed } from 'vue'
+import { inject, computed, nextTick } from 'vue'
 
 const props = defineProps({
   category: {
@@ -26,11 +26,23 @@ const selectSubcategory = () => {
   // Update selection
   selectedCategorySlug.value = fullSlug.value
   
-  // Smooth scroll to the subcategory box in the main column
-  const element = document.getElementById(`subcat-${fullSlug.value}`)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+  // Wait for DOM to update if we switched main categories
+  nextTick(() => {
+    // Smooth scroll to the subcategory box in the main column
+    const element = document.getElementById(`subcat-${fullSlug.value}`)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      
+      // Trigger blink
+      element.classList.remove('blink')
+      void element.offsetWidth // trigger reflow
+      element.classList.add('blink')
+      
+      setTimeout(() => {
+        element.classList.remove('blink')
+      }, 1500)
+    }
+  })
 }
 </script>
 
