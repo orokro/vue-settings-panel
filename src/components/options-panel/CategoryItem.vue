@@ -23,7 +23,10 @@ const selectedCategorySlug = inject('selectedCategorySlug')
 const searchQuery = inject('searchQuery')
 const specification = inject('specification')
 
-const isSelected = computed(() => selectedCategorySlug.value === props.category.slug)
+const isSelected = computed(() => {
+  const selectedTopLevel = selectedCategorySlug.value.split('.')[0]
+  return selectedTopLevel === props.category.slug
+})
 const hasSubcategories = computed(() => props.category.categories && props.category.categories.length > 0)
 const isExpanded = computed(() => isSelected.value || (searchQuery.value && props.category.hasSearchMatch))
 
