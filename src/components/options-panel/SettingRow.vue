@@ -6,7 +6,7 @@
         and dynamically mounts the appropriate editor component.
 -->
 <script setup>
-import { inject, computed } from 'vue'
+import { inject, computed, ref } from 'vue'
 
 const props = defineProps({
   settingKey: {
@@ -23,10 +23,26 @@ const settings = inject('settings')
 const updateSetting = inject('updateSetting')
 const searchQuery = inject('searchQuery')
 
+const error = ref('')
+
 const currentValue = computed(() => settings.value[props.settingKey])
 
 const onChange = (newValue) => {
-  updateSetting(props.settingKey, newValue)
+  let finalValue = newValue
+  if (props.setting.lint) {
+    finalValue = props.setting.lint(newValue)
+  }
+  updateSetting(props.settingKey, finalValue)
+  
+  // Clear error on change if linting/validation is reactive
+  if (error.value) error.value = ''
+}
+
+const onBlur = () => {
+  if (props.setting.validate) {
+    const result = props.setting.validate(currentValue.value)
+    error.value = typeof result === 'string' ? result : ''
+  }
 }
 
 const highlight = (text) => {
@@ -59,15 +75,14 @@ const rowStyle = computed(() => ({
         <span v-if="matchedTag" class="tag-badge">matched: {{ matchedTag }}</span>
       </div>
       <p class="setting-desc" v-if="setting.desc" v-html="highlight(setting.desc)"></p>
+      <div v-if="error" class="error-message">{{ error }}</div>
     </div>
 
-    <div class="setting-editor" :class="{ 'bottom-mount': isBottomMount }">
+    <div class="setting-editor" :class="{ 'bottom-mount': isBottomMount }" @focusout="onBlur">
       <component 
         :is="setting.type.component" 
         :value="currentValue" 
         :opts="setting.opts || {}"
-        :lint="setting.lint"
-        :validate="setting.validate"
         @change="onChange"
       />
     </div>
@@ -121,6 +136,13 @@ const rowStyle = computed(() => ({
       font-size: 13px;
       color: var(--mc-settingsRowDescColor, #666);
       line-height: 1.4;
+    }
+
+    .error-message {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #f44336;
+      font-weight: 500;
     }
   }
 

@@ -44,7 +44,16 @@ const specs = {
       fontSize: { name: 'Editor Font Size', desc: 'Script text size', cats: ['scripting.editor'], type: TYPES.Number, opts: { min: 8, max: 32, step: 1 }, default: 14, mount: 'bottom' },
       safeMode: { name: 'Scripts Safe Mode', desc: 'FS protection', cats: ['scripting.runtime'], type: TYPES.Boolean, default: true },
       enableBeta: { name: 'Beta Features', desc: 'Experimental algorithms', cats: ['advanced'], tags: ['experimental', 'test'], type: TYPES.Boolean, default: false },
-      masterGain: { name: 'Master Output Gain', desc: 'Output calibration', cats: ['advanced'], tags: ['gain', 'volume', 'loudness'], type: TYPES.FloatRange, opts: { min: -60, max: 12, step: 0.1 }, default: 0 }
+      masterGain: { name: 'Master Output Gain', desc: 'Output calibration', cats: ['advanced'], tags: ['gain', 'volume', 'loudness'], type: TYPES.FloatRange, opts: { min: -60, max: 12, step: 0.1 }, default: 0 },
+      userHandle: { 
+        name: 'User Handle', 
+        desc: 'Unique identifier for community features', 
+        cats: ['advanced'], 
+        type: TYPES.String, 
+        default: 'user_123',
+        lint: (val) => val.toLowerCase().replace(/\s+/g, '_'),
+        validate: (val) => val.length >= 3 || "Handle must be at least 3 characters"
+      }
     }
   },
   'no-asio': {
@@ -102,6 +111,7 @@ const settingsState = reactive({
   safeMode: true,
   enableBeta: false,
   masterGain: -3.5,
+  userHandle: 'pro_editor',
   themeColor: '#ff4081',
   masterVolume: 80
 })
