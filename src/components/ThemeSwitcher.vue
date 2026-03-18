@@ -67,7 +67,7 @@ const themes = {
       subcategoryBorder: 'none',
       subcategoryBgColor: '#1a1a1a',
       subCategoryTextColor: '#aaa',
-      attentionColor: '#00abae',
+      attentionColor: '#bb86fc',
     },
     toggle: {
       bgColor: '#444',
