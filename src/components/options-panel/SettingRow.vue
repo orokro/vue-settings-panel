@@ -57,7 +57,10 @@ const matchedTag = computed(() => {
   return props.setting.tags.find(tag => tag.toLowerCase().includes(q))
 })
 
-const isBottomMount = computed(() => props.setting.type?.mount === 'bottom' || props.setting.mount === 'bottom')
+const isBottomMount = computed(() => {
+  if (props.setting.type?.slug === 'string' && props.setting.opts?.multiline) return true
+  return props.setting.type?.mount === 'bottom' || props.setting.mount === 'bottom'
+})
 
 const rowStyle = computed(() => ({
   backgroundColor: 'var(--mc-settingsRowBgColor, transparent)',

@@ -44,7 +44,7 @@ const specs = {
       fontSize: { name: 'Editor Font Size', desc: 'Script text size', cats: ['scripting.editor'], type: TYPES.Number, opts: { min: 8, max: 32, step: 1 }, default: 14, mount: 'bottom' },
       safeMode: { name: 'Scripts Safe Mode', desc: 'FS protection', cats: ['scripting.runtime'], type: TYPES.Boolean, default: true },
       enableBeta: { name: 'Beta Features', desc: 'Experimental algorithms', cats: ['advanced'], tags: ['experimental', 'test'], type: TYPES.Boolean, default: false },
-      masterGain: { name: 'Master Output Gain', desc: 'Output calibration', cats: ['advanced'], tags: ['gain', 'volume', 'loudness'], type: TYPES.FloatRange, opts: { min: -60, max: 12, step: 0.1 }, default: 0 },
+      masterGain: { name: 'Master Output Gain', desc: 'Calibration level for the main output stage', cats: ['advanced'], tags: ['gain', 'volume', 'loudness'], type: TYPES.FloatRange, opts: { min: -60, max: 12, step: 0.1, showInput: true }, default: 0 },
       userHandle: { 
         name: 'User Handle', 
         desc: 'Unique identifier for community features', 
@@ -53,6 +53,58 @@ const specs = {
         default: 'user_123',
         lint: (val) => val.toLowerCase().replace(/\s+/g, '_'),
         validate: (val) => val.length >= 3 || "Handle must be at least 3 characters"
+      },
+      userBio: {
+        name: 'User Bio',
+        desc: 'Tell the community about yourself',
+        cats: ['advanced'],
+        type: TYPES.String,
+        opts: { multiline: true, rows: 3 },
+        default: ''
+      },
+      preferredTheme: {
+        name: 'UI Theme Style',
+        desc: 'Select your preferred visual style',
+        cats: ['ui.themes'],
+        type: TYPES.Select,
+        opts: { options: ["Classic", "Modern", "High Contrast"], radio: true },
+        default: "Modern"
+      },
+      licenseExpiry: {
+        name: 'License Expiry',
+        desc: 'Check when your subscription expires',
+        cats: ['advanced'],
+        type: TYPES.Date,
+        default: '2026-12-31'
+      },
+      dailyBackupTime: {
+        name: 'Backup Time',
+        desc: 'Time of day to run automated backups',
+        cats: ['ui.general'],
+        type: TYPES.Time,
+        default: '03:00'
+      },
+      exportShortcut: {
+        name: 'Export Shortcut',
+        desc: 'Keyboard shortcut to export current project',
+        cats: ['ui.general'],
+        type: TYPES.KeyInput,
+        default: { ctrl: true, shift: false, alt: false, meta: false, key: 'e' }
+      },
+      customMidiDevice: {
+        name: 'External Controller',
+        desc: 'Click to capture input from your connected device',
+        cats: ['control.hw'],
+        type: TYPES.GenericInput,
+        opts: { 
+          onInputRequest: (set) => {
+            setTimeout(() => {
+              set("MIDI Dev " + Math.floor(Math.random() * 100))
+            }, 1000)
+          },
+          placeholder: 'Waiting for MIDI...'
+        },
+        default: ''
       }
     }
   },
@@ -112,6 +164,12 @@ const settingsState = reactive({
   enableBeta: false,
   masterGain: -3.5,
   userHandle: 'pro_editor',
+  userBio: 'Music producer and sound designer.',
+  preferredTheme: 'Modern',
+  licenseExpiry: '2026-12-31',
+  dailyBackupTime: '03:00',
+  exportShortcut: { ctrl: true, shift: false, alt: false, meta: false, key: 'e' },
+  customMidiDevice: '',
   themeColor: '#ff4081',
   masterVolume: 80
 })

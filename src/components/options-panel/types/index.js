@@ -5,6 +5,10 @@ import SelectEdit from './SelectEdit.vue'
 import FloatRangeEdit from './FloatRangeEdit.vue'
 import ColorEdit from './ColorEdit.vue'
 import ImageEdit from './ImageEdit.vue'
+import DateEdit from './DateEdit.vue'
+import TimeEdit from './TimeEdit.vue'
+import KeyInputEdit from './KeyInputEdit.vue'
+import GenericInputEdit from './GenericInputEdit.vue'
 
 export const TYPES = {
   Boolean: {
@@ -48,6 +52,30 @@ export const TYPES = {
     slug: 'image',
     defaultValue: '',
     component: ImageEdit,
+  },
+  Date: {
+    name: 'Date',
+    slug: 'date',
+    defaultValue: '',
+    component: DateEdit,
+  },
+  Time: {
+    name: 'Time',
+    slug: 'time',
+    defaultValue: '',
+    component: TimeEdit,
+  },
+  KeyInput: {
+    name: 'Keyboard Shortcut',
+    slug: 'key-input',
+    defaultValue: { shift: false, ctrl: false, alt: false, meta: false, key: '' },
+    component: KeyInputEdit,
+  },
+  GenericInput: {
+    name: 'Generic Input',
+    slug: 'generic-input',
+    defaultValue: '',
+    component: GenericInputEdit,
   }
 }
 

@@ -1,8 +1,8 @@
 <!--
-        StringEdit.vue
-        --------------
+        TimeEdit.vue
+        ------------
 
-        A text input for string values, with multiline support.
+        A time picker input.
 -->
 <script setup>
 const props = defineProps({
@@ -12,7 +12,7 @@ const props = defineProps({
   },
   opts: {
     type: Object,
-    default: () => ({ placeholder: '', multiline: false, rows: 4 })
+    default: () => ({})
   },
   lint: {
     type: Function,
@@ -42,33 +42,22 @@ const onBlur = () => {
 </script>
 
 <template>
-  <div class="string-edit" :class="{ 'is-multiline': opts.multiline }">
-    <textarea 
-      v-if="opts.multiline"
-      :value="value"
-      :placeholder="opts.placeholder || ''"
-      :rows="opts.rows || 4"
-      @input="onChange"
-      @blur="onBlur"
-      class="text-input textarea"
-    ></textarea>
+  <div class="time-edit">
     <input 
-      v-else
-      type="text" 
+      type="time" 
       :value="value" 
-      :placeholder="opts.placeholder || ''"
       @input="onChange"
       @blur="onBlur"
-      class="text-input"
+      class="time-input"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.string-edit {
+.time-edit {
   width: 100%;
   
-  .text-input {
+  .time-input {
     width: 100%;
     padding: 8px 12px;
     border-radius: 4px;
@@ -78,22 +67,11 @@ const onBlur = () => {
     font-size: 14px;
     outline: none;
     transition: border-color 0.2s;
-    user-select: text;
+    font-family: inherit;
 
     &:focus {
       border-color: var(--input-focus-border-color, #4caf50);
     }
-
-    &.textarea {
-      resize: vertical;
-      min-height: 80px;
-      font-family: inherit;
-      line-height: 1.5;
-    }
-  }
-
-  &.is-multiline {
-    width: 100%;
   }
 }
 </style>
