@@ -6,14 +6,14 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/vue-settings-panel.umd.cjs",
-  "module": "./dist/vue-settings-panel.js",
+  "main": "./dist/vue-settings-panel.umd.js",
+  "module": "./dist/vue-settings-panel.es.js",
   "exports": {
     ".": {
-      "import": "./dist/vue-settings-panel.js",
-      "require": "./dist/vue-settings-panel.umd.cjs"
+      "import": "./dist/vue-settings-panel.es.js",
+      "require": "./dist/vue-settings-panel.umd.js"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./dist/style.css": "./dist/vue-settings-panel.css"
   },
   "scripts": {
     "dev": "vite",
