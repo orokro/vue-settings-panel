@@ -1,8 +1,7 @@
 <script setup>
 import { reactive, ref, computed } from 'vue'
-import VueOptionsPanel from './components/options-panel/VueOptionsPanel.vue'
-import ThemeSwitcher from './components/ThemeSwitcher.vue'
-import { TYPES } from './components/options-panel/types'
+import { VueSettingsPanel, TYPES, createSettings } from '../lib/index.js'
+import ThemeSwitcher from './ThemeSwitcher.vue'
 
 // 1. Define Specification Profiles
 const specs = {
@@ -146,7 +145,8 @@ window.addEventListener('hashchange', () => {
   isReactivityTest.value = window.location.hash === '#reactivity-test'
 })
 
-const settingsState = reactive({
+// Using the new createSettings helper
+const settingsState = createSettings(specs.default, {
   driverType: "ASIO",
   sampleRate: "48000 Hz",
   bufferSize: 256,
@@ -206,10 +206,10 @@ const toggleReactivityTest = () => {
 <template>
   <div class="app-wrapper">
     <div class="header-actions">
-      <ThemeSwitcher
-        v-model:theme="activeTheme"
+      <ThemeSwitcher 
+        v-model:theme="activeTheme" 
         :currentTheme="activeTheme"
-        :showSidebar="showSidebarGlobal"
+        :showSidebar="showSidebarGlobal" 
         @update:showSidebar="updateShowSidebar"
         @update:spec="updateSpec"
       />
@@ -217,15 +217,15 @@ const toggleReactivityTest = () => {
         {{ isReactivityTest ? 'Exit Reactivity Test' : 'Test Reactivity (Side-by-Side)' }}
       </button>
     </div>
-
+    
     <div class="app-container" :class="{ 'reactivity-test': isReactivityTest }">
-      <VueOptionsPanel
+      <VueSettingsPanel
         :settings="settingsState"
         :specification="currentSpec"
         :themeColors="activeTheme"
         @settings-changed="handleSettingsChanged"
       />
-      <VueOptionsPanel
+      <VueSettingsPanel
         v-if="isReactivityTest"
         :settings="settingsState"
         :specification="currentSpec"
@@ -297,7 +297,6 @@ body, html {
   background: #111;
   transition: all 0.3s ease;
 
-//   border: 2px solid red;
   &.reactivity-test {
     width: 100%;
     max-width: 100vw;

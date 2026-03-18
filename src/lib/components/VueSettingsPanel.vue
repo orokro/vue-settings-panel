@@ -1,6 +1,6 @@
 <!--
-        VueOptionsPanel.vue
-        -------------------
+        VueSettingsPanel.vue
+        --------------------
 
         The main entry point for the settings panel. Manages theme, search state,
         and coordinates between the left and main columns.
@@ -9,6 +9,7 @@
 import { ref, computed, watch, provide, isReactive } from 'vue'
 import LeftColumn from './LeftColumn.vue'
 import MainColumn from './MainColumn.vue'
+import { defaultTheme } from '../constants.js'
 import 'material-icons/iconfont/material-icons.css'
 
 const props = defineProps({
@@ -33,55 +34,6 @@ const searchQuery = ref('')
 
 // Theme management
 const rootRef = ref(null)
-
-const defaultTheme = {
-  leftColumn: {
-    bgColor: '#f5f5f5',
-    categoriesBoxBgColor: 'transparent',
-    categoriesBoxBorder: 'none',
-    categoryColor: '#333',
-    categoryTextColor: '#333',
-    selectedCategoryBgColor: '#e0e0e0',
-    selectedCategoryTextColor: '#000',
-    searchBgColor: '#fff',
-    searchXColor: '#666',
-    searchTextColor: '#000',
-  },
-  mainColumn: {
-    bgColor: '#fff',
-    textColor: '#333',
-    categoryHeaderColor: '#222',
-    categoryHeaderTextColor: '#fff',
-    categoryBorder: '1px solid #eee',
-    categoryBgColor: '#fff',
-    categoryTextColor: '#333',
-    settingsRowBgColor: 'transparent',
-    settingsRowNameColor: '#000',
-    settingsRowDescColor: '#666',
-    settingsRowBorder: '1px solid #f0f0f0',
-    subcategoryHeaderColor: '#444',
-    subcategoryHeaderTextColor: '#fff',
-    subcategoryBorder: 'none',
-    subcategoryBgColor: '#f9f9f9',
-    subCategoryTextColor: '#333',
-    attentionColor: '#00abae',
-  },
-  toggle: {
-    bgColor: '#ccc',
-    thumbColor: '#fff',
-    activeBgColor: '#4caf50'
-  },
-  input: {
-    borderColor: '#ccc',
-    bgColor: '#fff',
-    textColor: '#333',
-    focusBorderColor: '#4caf50'
-  },
-  range: {
-    thumbColor: '#4caf50',
-    trackColor: '#ccc'
-  }
-}
 
 const deepMerge = (target, source) => {
   const result = { ...target }
@@ -133,6 +85,10 @@ const applyTheme = (theme) => {
     root.style.setProperty('--range-thumb-color', t.range.thumbColor)
     root.style.setProperty('--range-track-color', t.range.trackColor)
   }
+
+  if (t.mainColumn && t.mainColumn.attentionColor) {
+    root.style.setProperty('--mc-attentionColor', t.mainColumn.attentionColor)
+  }
 }
 
 watch(() => props.themeColors, (newTheme) => {
@@ -168,14 +124,14 @@ const showLeftPanel = computed(() => {
 </script>
 
 <template>
-  <div class="vue-options-panel" ref="rootRef" :class="{ 'no-left-panel': !showLeftPanel }">
+  <div class="vue-settings-panel" ref="rootRef" :class="{ 'no-left-panel': !showLeftPanel }">
     <LeftColumn v-if="showLeftPanel" />
     <MainColumn />
   </div>
 </template>
 
 <style lang="scss">
-.vue-options-panel {
+.vue-settings-panel {
   display: flex;
   width: 100%;
   height: 100%;
