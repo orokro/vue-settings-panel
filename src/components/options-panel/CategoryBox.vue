@@ -73,9 +73,12 @@ const mode = computed(() => specification.search?.nonMatchSettings || 'gray')
   >
     <div class="category-header">
       <div class="title-row">
-        <span v-if="category.icon" class="material-icons category-icon">
-          {{ category.icon }}
-        </span>
+        <div class="icon-container" v-if="category.icon">
+          <span v-if="typeof category.icon === 'string' && !category.icon.includes('/')" class="material-icons category-icon">
+            {{ category.icon }}
+          </span>
+          <img v-else :src="category.icon" class="custom-icon" />
+        </div>
         <h2 class="category-title">{{ category.name }}</h2>
       </div>
       <p class="category-desc" v-if="category.desc">{{ category.desc }}</p>
@@ -126,11 +129,30 @@ const mode = computed(() => specification.search?.nonMatchSettings || 'gray')
         color: var(--mc-categoryHeaderColor, #222);
       }
 
+      .icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+      }
+
+      .custom-icon {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
       .category-title {
         margin: 0;
         font-size: 24px;
         font-weight: 600;
         color: var(--mc-categoryHeaderColor, #222);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
       }
     }
 

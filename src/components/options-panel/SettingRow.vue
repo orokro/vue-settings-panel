@@ -77,7 +77,7 @@ const rowStyle = computed(() => ({
 <style lang="scss">
 .setting-row {
   display: flex;
-  padding: 16px 0;
+  padding: 16px 20px;
   gap: 24px;
   
   &:last-child {

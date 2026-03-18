@@ -67,6 +67,49 @@ const onBlur = () => {
   .range-input {
     flex: 1;
     cursor: pointer;
+    appearance: none;
+    background: transparent;
+
+    &:focus {
+      outline: none;
+    }
+
+    /* Track */
+    &::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      background: var(--range-track-color, #ccc);
+      border-radius: 2px;
+    }
+
+    &::-moz-range-track {
+      width: 100%;
+      height: 4px;
+      background: var(--range-track-color, #ccc);
+      border-radius: 2px;
+    }
+
+    /* Thumb */
+    &::-webkit-slider-thumb {
+      appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: var(--range-thumb-color, #00abae);
+      cursor: pointer;
+      margin-top: -6px; /* Center thumb on track */
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    &::-moz-range-thumb {
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: var(--range-thumb-color, #00abae);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
   }
 
   .range-value {

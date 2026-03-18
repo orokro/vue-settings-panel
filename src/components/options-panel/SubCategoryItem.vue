@@ -56,6 +56,7 @@ const selectSubcategory = () => {
   user-select: none;
   font-size: 13px;
   margin: 2px 0;
+  position: relative;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);

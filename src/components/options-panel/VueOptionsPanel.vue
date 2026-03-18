@@ -75,14 +75,30 @@ const defaultTheme = {
     bgColor: '#fff',
     textColor: '#333',
     focusBorderColor: '#4caf50'
+  },
+  range: {
+    thumbColor: '#00abae',
+    trackColor: '#ccc'
   }
+}
+
+const deepMerge = (target, source) => {
+  const result = { ...target }
+  Object.keys(source).forEach((key) => {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      result[key] = deepMerge(target[key] || {}, source[key])
+    } else {
+      result[key] = source[key]
+    }
+  })
+  return result
 }
 
 const applyTheme = (theme) => {
   if (!rootRef.value) return
   
   const root = rootRef.value
-  const t = { ...defaultTheme, ...theme }
+  const t = deepMerge(defaultTheme, theme || {})
 
   // Left Column
   if (t.leftColumn) {
@@ -110,6 +126,11 @@ const applyTheme = (theme) => {
     root.style.setProperty('--input-bg-color', t.input.bgColor)
     root.style.setProperty('--input-text-color', t.input.textColor)
     root.style.setProperty('--input-focus-border-color', t.input.focusBorderColor)
+  }
+
+  if (t.range) {
+    root.style.setProperty('--range-thumb-color', t.range.thumbColor)
+    root.style.setProperty('--range-track-color', t.range.trackColor)
   }
 }
 
