@@ -168,7 +168,7 @@ const toggleReactivityTest = () => {
   </div>
 </template>
 
-<style>
+<style lang="scss">
 body, html {
   margin: 0;
   padding: 0;
@@ -203,10 +203,10 @@ body, html {
   transition: background 0.2s;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
 
-.reactivity-toggle:hover {
-  background: #008f91;
+  &:hover {
+    background: #008f91;
+  }
 }
 
 .app-wrapper {
@@ -218,8 +218,7 @@ body, html {
 
 .app-container {
   flex: 1;
-  width: 1500px;
-  border: 2px solid red;
+  width: 1000px;
   max-width: 95vw;
   height: 700px;
   max-height: 80vh;
@@ -229,21 +228,22 @@ body, html {
   overflow: hidden;
   background: #111;
   transition: all 0.3s ease;
-}
 
-.app-container.reactivity-test {
-  width: 100%;
-  max-width: 100vw;
-  height: 100%;
-  max-height: 100vh;
-  margin: 0;
-  border-radius: 0;
-  display: flex;
-  gap: 1px;
-  background: #444; /* Divider */
-}
+//   border: 2px solid red;
+  &.reactivity-test {
+    width: 100%;
+    max-width: 100vw;
+    height: 100%;
+    max-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    display: flex;
+    gap: 1px;
+    background: #444; /* Divider */
 
-.app-container.reactivity-test > * {
-  flex: 1;
+    & > * {
+      flex: 1;
+    }
+  }
 }
 </style>
