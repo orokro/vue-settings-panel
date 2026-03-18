@@ -5,6 +5,8 @@
         A dropdown selection input.
 -->
 <script setup>
+import { onMounted, watch } from 'vue'
+
 const props = defineProps({
   value: {
     type: [String, Number, Boolean],
@@ -26,6 +28,21 @@ const props = defineProps({
 
 const emit = defineEmits(['change'])
 
+const validateValue = () => {
+  const options = props.opts.options || []
+  if (options.length === 0) return
+
+  // If value is not in options, try to pick first one
+  if (!options.includes(props.value)) {
+    const nextValue = options[0]
+    if (props.lint) props.lint(nextValue)
+    emit('change', nextValue)
+  }
+}
+
+onMounted(validateValue)
+watch(() => props.opts.options, validateValue)
+
 const onChange = (e) => {
   const newValue = e.target.value
   if (props.lint) {
@@ -43,7 +60,8 @@ const onBlur = () => {
 
 <template>
   <div class="select-edit">
-    <select :value="value" @change="onChange" @blur="onBlur" class="select-input">
+    <select :value="value" @change="onChange" @blur="onBlur" class="select-input" :disabled="opts.options.length === 0">
+      <option v-if="opts.options.length === 0" value="">Setting Not Available</option>
       <option v-for="option in opts.options" :key="option" :value="option">
         {{ option }}
       </option>

@@ -21,16 +21,16 @@ const settingsState = inject('settings')
 const searchQuery = inject('searchQuery')
 
 const topLevelSettings = computed(() => {
-  const allSettings = specification.settings || {}
+  const allSettings = specification.value.settings || {}
   return Object.entries(allSettings).filter(([key, s]) => {
-    const isVisible = typeof s.show === 'function' ? s.show(settingsState) : true
+    const isVisible = typeof s.show === 'function' ? s.show(settingsState.value) : true
     return isVisible && s.cats && s.cats.includes(props.category.slug)
   })
 })
 
 const subCategories = computed(() => {
   return (props.category.categories || []).filter(sub => {
-    return typeof sub.show === 'function' ? sub.show(settingsState) : true
+    return typeof sub.show === 'function' ? sub.show(settingsState.value) : true
   })
 })
 
@@ -43,7 +43,7 @@ const shouldShow = computed(() => {
   if (props.category.name.toLowerCase().includes(q) || (props.category.desc && props.category.desc.toLowerCase().includes(q))) return true
   
   // Check if any settings match
-  const allSettingsInThisCat = Object.values(specification.settings || {}).filter(s => s.cats && s.cats.some(c => c.startsWith(props.category.slug)))
+  const allSettingsInThisCat = Object.values(specification.value.settings || {}).filter(s => s.cats && s.cats.some(c => c.startsWith(props.category.slug)))
   const anySettingMatches = allSettingsInThisCat.some(s => 
     s.name.toLowerCase().includes(q) || 
     (s.desc && s.desc.toLowerCase().includes(q)) || 
@@ -54,14 +54,14 @@ const shouldShow = computed(() => {
   // Check subcategories
   return subCategories.value.some(sub => {
     const fullSubSlug = `${props.category.slug}.${sub.slug}`
-    const settingsInSub = Object.values(specification.settings || {}).filter(s => s.cats && s.cats.includes(fullSubSlug))
+    const settingsInSub = Object.values(specification.value.settings || {}).filter(s => s.cats && s.cats.includes(fullSubSlug))
     return sub.name.toLowerCase().includes(q) || settingsInSub.some(s => 
       s.name.toLowerCase().includes(q) || (s.desc && s.desc.toLowerCase().includes(q))
     )
   })
 })
 
-const mode = computed(() => specification.search?.nonMatchSettings || 'gray')
+const mode = computed(() => specification.value.search?.nonMatchSettings || 'gray')
 </script>
 
 <template>

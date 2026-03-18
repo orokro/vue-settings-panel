@@ -9,10 +9,14 @@ const props = defineProps({
   currentTheme: {
     type: Object,
     required: true
+  },
+  showSidebar: {
+    type: Boolean,
+    default: true
   }
 })
 
-const emit = defineEmits(['update:theme'])
+const emit = defineEmits(['update:theme', 'update:showSidebar', 'update:spec'])
 
 const themes = {
   light: {
@@ -27,6 +31,9 @@ const themes = {
       textColor: '#333',
       categoryHeaderColor: '#222',
       categoryHeaderTextColor: '#fff',
+    },
+    range: {
+      thumbColor: '#4caf50'
     }
   },
   dark: {
@@ -70,6 +77,9 @@ const themes = {
       bgColor: '#252526',
       textColor: '#fff',
       focusBorderColor: '#00abae'
+    },
+    range: {
+      thumbColor: '#00abae'
     }
   },
   fun: {
@@ -113,6 +123,9 @@ const themes = {
       bgColor: '#ffffff',
       textColor: '#004d40',
       focusBorderColor: '#004d40'
+    },
+    range: {
+      thumbColor: '#007072'
     }
   }
 }
@@ -120,33 +133,67 @@ const themes = {
 const selectTheme = (name) => {
   emit('update:theme', themes[name])
 }
+
+const toggleSidebar = () => {
+  emit('update:showSidebar', !props.showSidebar)
+}
+
+const selectSpec = (name) => {
+  emit('update:spec', name)
+}
 </script>
 
 <template>
-  <div class="theme-switcher">
-    <span class="label">Theme:</span>
-    <div class="buttons">
-      <button @click="selectTheme('light')">Light</button>
-      <button @click="selectTheme('dark')">Dark</button>
-      <button @click="selectTheme('fun')">Fun</button>
+  <div class="header-toolbar">
+    <div class="toolbar-section">
+      <span class="label">Theme:</span>
+      <div class="buttons">
+        <button @click="selectTheme('light')">Light</button>
+        <button @click="selectTheme('dark')">Dark</button>
+        <button @click="selectTheme('fun')">Fun</button>
+      </div>
+    </div>
+
+    <div class="toolbar-section">
+      <span class="label">Spec Profile:</span>
+      <div class="buttons">
+        <button @click="selectSpec('default')">Default</button>
+        <button @click="selectSpec('no-asio')">No ASIO</button>
+        <button @click="selectSpec('minimal')">Minimal</button>
+      </div>
+    </div>
+
+    <div class="toolbar-section">
+      <label class="sidebar-toggle">
+        <input type="checkbox" :checked="showSidebar" @change="toggleSidebar" />
+        <span class="label">Show Sidebar</span>
+      </label>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.theme-switcher {
+.header-toolbar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 24px;
   padding: 10px 16px;
   background: #f0f0f0;
   border-bottom: 1px solid #ddd;
   font-family: sans-serif;
   font-size: 13px;
 
+  .toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
   .label {
     font-weight: bold;
     color: #555;
+    white-space: nowrap;
   }
 
   .buttons {
@@ -160,7 +207,7 @@ const selectTheme = (name) => {
     background: #fff;
     cursor: pointer;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 11px;
     transition: all 0.2s;
 
     &:hover {
@@ -170,6 +217,18 @@ const selectTheme = (name) => {
 
     &:active {
       background: #f0f0f0;
+    }
+  }
+
+  .sidebar-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    
+    input {
+      cursor: pointer;
     }
   }
 }

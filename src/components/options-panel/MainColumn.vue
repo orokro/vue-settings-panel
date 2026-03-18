@@ -14,15 +14,15 @@ const selectedCategorySlug = inject('selectedCategorySlug')
 const settings = inject('settings')
 
 const showLeftPanel = computed(() => {
-  return specification.sidePanel?.enabled !== false
+  return specification.value.sidePanel?.enabled !== false
 })
 
 const categories = computed(() => {
-  const cats = specification.categories || []
+  const cats = specification.value.categories || []
   
   if (!showLeftPanel.value) {
     // Show all categories that pass their show() test
-    return cats.filter(cat => typeof cat.show === 'function' ? cat.show(settings) : true)
+    return cats.filter(cat => typeof cat.show === 'function' ? cat.show(settings.value) : true)
   }
   
   // Show only the selected top-level category

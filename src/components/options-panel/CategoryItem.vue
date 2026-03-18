@@ -33,7 +33,7 @@ const isExpanded = computed(() => isSelected.value || (searchQuery.value && prop
 const nonMatchedStyle = computed(() => {
   if (!searchQuery.value || props.category.hasSearchMatch) return {}
   
-  const mode = specification.search?.nonMatchedCategories || 'gray'
+  const mode = specification.value.search?.nonMatchedCategories || 'gray'
   if (mode === 'collapse') return { display: 'none' }
   return { opacity: 0.4, pointerEvents: 'none' }
 })

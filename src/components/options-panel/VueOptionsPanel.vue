@@ -77,7 +77,7 @@ const defaultTheme = {
     focusBorderColor: '#4caf50'
   },
   range: {
-    thumbColor: '#00abae',
+    thumbColor: '#4caf50',
     trackColor: '#ccc'
   }
 }
@@ -154,8 +154,8 @@ const updateSetting = (key, value) => {
 const selectedCategorySlug = ref(props.specification.categories?.[0]?.slug || '')
 
 // Provide state to children
-provide('settings', props.settings)
-provide('specification', props.specification)
+provide('settings', computed(() => props.settings))
+provide('specification', computed(() => props.specification))
 provide('searchQuery', searchQuery)
 provide('updateSetting', updateSetting)
 provide('selectedCategorySlug', selectedCategorySlug)

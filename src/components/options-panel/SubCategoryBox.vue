@@ -26,9 +26,9 @@ const searchQuery = inject('searchQuery')
 const fullSlug = computed(() => `${props.parentSlug}.${props.category.slug}`)
 
 const subSettings = computed(() => {
-  const allSettings = specification.settings || {}
+  const allSettings = specification.value.settings || {}
   return Object.entries(allSettings).filter(([key, s]) => {
-    const isVisible = typeof s.show === 'function' ? s.show(settingsState) : true
+    const isVisible = typeof s.show === 'function' ? s.show(settingsState.value) : true
     return isVisible && s.cats && s.cats.includes(fullSlug.value)
   })
 })
@@ -49,7 +49,7 @@ const shouldShow = computed(() => {
   )
 })
 
-const mode = computed(() => specification.search?.nonMatchSettings || 'gray')
+const mode = computed(() => specification.value.search?.nonMatchSettings || 'gray')
 </script>
 
 <template>

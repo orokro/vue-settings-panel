@@ -1,210 +1,84 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import VueOptionsPanel from './components/options-panel/VueOptionsPanel.vue'
 import ThemeSwitcher from './components/ThemeSwitcher.vue'
 import { TYPES } from './components/options-panel/types'
 
-// 1. Robust Specification for a Music DAW
-const settingsSpec = {
-  sidePanel: {
-    enabled: true,
-    autoCollapse: true,
-  },
-
-  search: {
-    nonMatchedCategories: 'gray',
-    nonMatchSettings: 'collapse',
-  },
-
-  categories: [
-    {
-      name: "Audio Engine",
-      slug: "audio",
-      desc: "Configure core audio processing and hardware routing",
-      icon: 'speaker',
-      categories: [
+// 1. Define Specification Profiles
+const specs = {
+  default: {
+    sidePanel: { enabled: true, autoCollapse: true },
+    search: { nonMatchedCategories: 'gray', nonMatchSettings: 'collapse' },
+    categories: [
+      { name: "Audio Engine", slug: "audio", desc: "Configure core audio processing", icon: 'speaker', categories: [
         { name: "Device Settings", slug: "device" },
         { name: "Buffer & Latency", slug: "buffer" }
-      ]
-    },
-    {
-      name: "Control Surfaces",
-      slug: "control",
-      desc: "Connect external MIDI controllers and Mackie/HUI surfaces",
-      icon: 'settings_input_component',
-      categories: [
+      ]},
+      { name: "Control Surfaces", slug: "control", desc: "Connect MIDI controllers", icon: 'settings_input_component', categories: [
         { name: "MIDI Mapping", slug: "midi" },
         { name: "Hardware Integration", slug: "hw" }
-      ]
-    },
-    {
-      name: "Interface",
-      slug: "ui",
-      desc: "Customize the DAW visual appearance and behavior",
-      icon: 'palette',
-      categories: [
+      ]},
+      { name: "Interface", slug: "ui", desc: "Customize DAW appearance", icon: 'palette', categories: [
         { name: "General UI", slug: "general" },
         { name: "Themes", slug: "themes" }
-      ]
-    },
-    {
-      name: "Python Scripting",
-      slug: "scripting",
-      desc: "Automation and extension via internal Python API",
-      icon: 'code',
-      categories: [
+      ]},
+      { name: "Python Scripting", slug: "scripting", desc: "Automation and extension", icon: 'code', categories: [
         { name: "Editor Options", slug: "editor" },
         { name: "Runtime", slug: "runtime" }
-      ]
-    },
-    {
-      name: "Advanced",
-      slug: "advanced",
-      desc: "Experimental features and expert settings",
-      icon: 'https://vuejs.org/images/logo.png', // Demo icon link
+      ]},
+      { name: "Advanced", slug: "advanced", desc: "Experimental features", icon: 'https://vuejs.org/images/logo.png' }
+    ],
+    settings: {
+      driverType: { name: 'Driver Type', desc: 'Select audio driver', cats: ['audio.device'], type: TYPES.Select, opts: { options: ["ASIO", "CoreAudio", "WASAPI", "DirectSound"] }, default: "ASIO" },
+      sampleRate: { name: 'Sample Rate', desc: 'Audio resolution', cats: ['audio.device'], type: TYPES.Select, opts: { options: ["44100 Hz", "48000 Hz", "88200 Hz", "96000 Hz"] }, default: "48000 Hz" },
+      bufferSize: { name: 'Buffer Size', desc: 'Latency control', cats: ['audio.buffer'], tags: ['latency', 'delay'], type: TYPES.Number, opts: { min: 32, max: 4096, step: 32 }, default: 512 },
+      multiCore: { name: 'Multi-Core Processing', desc: 'Parallel processing', cats: ['audio.buffer'], type: TYPES.Boolean, default: true },
+      enableMidi: { name: 'Enable MIDI Input', desc: 'Allow MIDI data', cats: ['control.midi'], type: TYPES.Boolean, default: true },
+      midiClock: { name: 'Send MIDI Clock', desc: 'Sync hardware', cats: ['control.midi'], type: TYPES.Boolean, default: false, show: (s) => s.enableMidi },
+      surfaceType: { name: 'Surface Protocol', desc: 'HW protocol', cats: ['control.hw'], type: TYPES.Select, opts: { options: ["Native", "Mackie Control", "HUI", "OSC"] }, default: "Native" },
+      autoSave: { name: 'Auto Save', desc: 'Background saving', cats: ['ui.general'], type: TYPES.Boolean, default: true },
+      saveInterval: { name: 'Save Interval', desc: 'Minutes between saves', cats: ['ui.general'], type: TYPES.FloatRange, opts: { min: 1, max: 60, step: 1 }, default: 10, show: (s) => s.autoSave },
+      accentColor: { name: 'Accent Color', desc: 'UI highlight color', cats: ['ui.themes'], type: TYPES.Color, default: '#00abae' },
+      uiScale: { name: 'UI Scaling', desc: 'Adjust UI size', cats: ['ui.themes'], type: TYPES.FloatRange, opts: { min: 0.5, max: 2, step: 0.1 }, default: 1 },
+      autoComplete: { name: 'Auto-Completion', desc: 'Python suggestions', cats: ['scripting.editor'], type: TYPES.Boolean, default: true },
+      fontSize: { name: 'Editor Font Size', desc: 'Script text size', cats: ['scripting.editor'], type: TYPES.Number, opts: { min: 8, max: 32, step: 1 }, default: 14, mount: 'bottom' },
+      safeMode: { name: 'Scripts Safe Mode', desc: 'FS protection', cats: ['scripting.runtime'], type: TYPES.Boolean, default: true },
+      enableBeta: { name: 'Beta Features', desc: 'Experimental algorithms', cats: ['advanced'], tags: ['experimental', 'test'], type: TYPES.Boolean, default: false },
+      masterGain: { name: 'Master Output Gain', desc: 'Output calibration', cats: ['advanced'], tags: ['gain', 'volume', 'loudness'], type: TYPES.FloatRange, opts: { min: -60, max: 12, step: 0.1 }, default: 0 }
     }
-  ],
-
-  settings: {
-    // --- Audio Engine ---
-    driverType: {
-      name: 'Driver Type',
-      desc: 'Select the audio driver architecture',
-      cats: ['audio.device'],
-      type: TYPES.Select,
-      opts: { options: ["ASIO", "CoreAudio", "WASAPI", "DirectSound"] },
-      default: "ASIO"
-    },
-    sampleRate: {
-      name: 'Sample Rate',
-      desc: 'System-wide audio resolution',
-      cats: ['audio.device'],
-      type: TYPES.Select,
-      opts: { options: ["44100 Hz", "48000 Hz", "88200 Hz", "96000 Hz"] },
-      default: "48000 Hz"
-    },
-    bufferSize: {
-      name: 'Buffer Size',
-      desc: 'Lower values reduce latency but increase CPU load',
-      cats: ['audio.buffer'],
-      tags: ['latency', 'delay'],
-      type: TYPES.Number,
-      opts: { min: 32, max: 4096, step: 32 },
-      default: 512
-    },
-    multiCore: {
-      name: 'Multi-Core Processing',
-      desc: 'Distribute audio processing across available CPU threads',
-      cats: ['audio.buffer'],
-      type: TYPES.Boolean,
-      default: true
-    },
-
-    // --- Control Surfaces ---
-    enableMidi: {
-      name: 'Enable MIDI Input',
-      desc: 'Allow external controllers to send data to the DAW',
-      cats: ['control.midi'],
-      type: TYPES.Boolean,
-      default: true
-    },
-    midiClock: {
-      name: 'Send MIDI Clock',
-      desc: 'Synchronize external hardware with DAW tempo',
-      cats: ['control.midi'],
-      type: TYPES.Boolean,
-      default: false,
-      show: (s) => s.enableMidi
-    },
-    surfaceType: {
-      name: 'Surface Protocol',
-      desc: 'Protocol used by the main hardware surface',
-      cats: ['control.hw'],
-      type: TYPES.Select,
-      opts: { options: ["Native", "Mackie Control", "HUI", "OSC"] },
-      default: "Native"
-    },
-
-    // --- Interface ---
-    autoSave: {
-      name: 'Auto Save',
-      desc: 'Save project periodically in the background',
-      cats: ['ui.general'],
-      type: TYPES.Boolean,
-      default: true
-    },
-    saveInterval: {
-      name: 'Save Interval',
-      desc: 'Minutes between automatic saves',
-      cats: ['ui.general'],
-      type: TYPES.FloatRange,
-      opts: { min: 1, max: 60, step: 1 },
-      default: 10,
-      show: (s) => s.autoSave
-    },
-    accentColor: {
-      name: 'Accent Color',
-      desc: 'Global highlight color for the UI',
-      cats: ['ui.themes'],
-      type: TYPES.Color,
-      default: '#00abae'
-    },
-    uiScale: {
-      name: 'UI Scaling',
-      desc: 'Adjust size of interface elements',
-      cats: ['ui.themes'],
-      type: TYPES.FloatRange,
-      opts: { min: 0.5, max: 2, step: 0.1 },
-      default: 1
-    },
-
-    // --- Scripting ---
-    autoComplete: {
-      name: 'Auto-Completion',
-      desc: 'Show suggestions while typing Python code',
-      cats: ['scripting.editor'],
-      type: TYPES.Boolean,
-      default: true
-    },
-    fontSize: {
-      name: 'Editor Font Size',
-      desc: 'Size of text in the script editor',
-      cats: ['scripting.editor'],
-      type: TYPES.Number,
-      opts: { min: 8, max: 32, step: 1 },
-      default: 14,
-      mount: 'bottom'
-    },
-    safeMode: {
-      name: 'Scripts Safe Mode',
-      desc: 'Prevent scripts from accessing the local file system',
-      cats: ['scripting.runtime'],
-      type: TYPES.Boolean,
-      default: true
-    },
-
-    // --- Advanced ---
-    enableBeta: {
-      name: 'Beta Features',
-      desc: 'Unlock experimental audio algorithms (may be unstable)',
-      cats: ['advanced'],
-      tags: ['experimental', 'test'],
-      type: TYPES.Boolean,
-      default: false
-    },
-    masterGain: {
-      name: 'Master Output Gain',
-      desc: 'Calibration level for the main output stage',
-      cats: ['advanced'],
-      tags: ['gain', 'volume', 'loudness'],
-      type: TYPES.FloatRange,
-      opts: { min: -60, max: 12, step: 0.1 },
-      default: 0
+  },
+  'no-asio': {
+    sidePanel: { enabled: true, autoCollapse: true },
+    search: { nonMatchedCategories: 'gray', nonMatchSettings: 'collapse' },
+    categories: [
+      { name: "Audio Engine", slug: "audio", desc: "Configure core audio processing", icon: 'speaker', categories: [
+        { name: "Device Settings", slug: "device" }
+      ]}
+    ],
+    settings: {
+      driverType: { name: 'Driver Type', desc: 'Select audio driver (ASIO MISSING)', cats: ['audio.device'], type: TYPES.Select, opts: { options: ["CoreAudio", "WASAPI", "DirectSound"] }, default: "CoreAudio" },
+      sampleRate: { name: 'Sample Rate', desc: 'Audio resolution', cats: ['audio.device'], type: TYPES.Select, opts: { options: ["44100 Hz", "48000 Hz", "88200 Hz", "96000 Hz"] }, default: "48000 Hz" }
+    }
+  },
+  minimal: {
+    sidePanel: { enabled: false, autoCollapse: true },
+    search: { nonMatchedCategories: 'collapse', nonMatchSettings: 'collapse' },
+    categories: [
+      { name: "Essential Settings", slug: "essential", desc: "Crucial parameters only", icon: 'star' }
+    ],
+    settings: {
+      autoSave: { name: 'Auto Save', desc: 'Keep your work safe', cats: ['essential'], type: TYPES.Boolean, default: true },
+      themeColor: { name: 'Primary Color', desc: 'Pick your vibe', cats: ['essential'], type: TYPES.Color, default: '#ff4081' },
+      masterVolume: { name: 'Volume', desc: 'Master output', cats: ['essential'], tags: ['gain'], type: TYPES.FloatRange, opts: { min: 0, max: 100, step: 1 }, default: 80 }
     }
   }
 }
 
-// 2. Initial State
+// 2. Reactive State
+const activeSpecName = ref('default')
+const activeTheme = ref({})
+const showSidebarGlobal = ref(true)
+
 const settingsState = reactive({
   driverType: "ASIO",
   sampleRate: "48000 Hz",
@@ -221,25 +95,50 @@ const settingsState = reactive({
   fontSize: 16,
   safeMode: true,
   enableBeta: false,
-  masterGain: -3.5
+  masterGain: -3.5,
+  themeColor: '#ff4081',
+  masterVolume: 80
 })
 
-// 3. Theme Management
-const activeTheme = ref({})
+const currentSpec = computed(() => {
+  const spec = { ...specs[activeSpecName.value] }
+  spec.sidePanel = { ...spec.sidePanel, enabled: showSidebarGlobal.value }
+  return spec
+})
 
 const handleSettingsChanged = (newSettings) => {
-  // console.log('DAW Settings updated:', newSettings)
+  // console.log('Settings updated:', newSettings)
+}
+
+const updateShowSidebar = (val) => {
+  showSidebarGlobal.value = val
+}
+
+const updateSpec = (name) => {
+  activeSpecName.value = name
+  // When switching to minimal, we might want to default sidebar to off
+  if (name === 'minimal') {
+    showSidebarGlobal.value = false
+  } else {
+    showSidebarGlobal.value = true
+  }
 }
 </script>
 
 <template>
   <div class="app-wrapper">
-    <ThemeSwitcher v-model:theme="activeTheme" />
+    <ThemeSwitcher 
+      v-model:theme="activeTheme" 
+      :currentTheme="activeTheme"
+      :showSidebar="showSidebarGlobal" 
+      @update:showSidebar="updateShowSidebar"
+      @update:spec="updateSpec"
+    />
     
     <div class="app-container">
       <VueOptionsPanel
         :settings="settingsState"
-        :specification="settingsSpec"
+        :specification="currentSpec"
         :themeColors="activeTheme"
         @settings-changed="handleSettingsChanged"
       />

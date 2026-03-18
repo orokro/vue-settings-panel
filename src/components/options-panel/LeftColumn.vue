@@ -15,7 +15,7 @@ const windowWidth = ref(window.innerWidth)
 
 const updateWidth = () => {
   windowWidth.value = window.innerWidth
-  if (specification.sidePanel?.autoCollapse) {
+  if (specification.value.sidePanel?.autoCollapse) {
     isCollapsed.value = windowWidth.value < 768
   }
 }

@@ -23,7 +23,7 @@ const settings = inject('settings')
 const updateSetting = inject('updateSetting')
 const searchQuery = inject('searchQuery')
 
-const currentValue = computed(() => settings[props.settingKey])
+const currentValue = computed(() => settings.value[props.settingKey])
 
 const onChange = (newValue) => {
   updateSetting(props.settingKey, newValue)
