@@ -5,6 +5,10 @@
         A text input for string values, with multiline support.
 -->
 <script setup>
+import { nextTick, ref } from 'vue'
+
+const inputEl = ref(null)
+
 const props = defineProps({
   value: {
     type: String,
@@ -28,10 +32,10 @@ const emit = defineEmits(['change'])
 
 const onChange = (e) => {
   const newValue = e.target.value
-  if (props.lint) {
-    props.lint(newValue)
-  }
   emit('change', newValue)
+  nextTick(() => {
+    if (inputEl.value) inputEl.value.value = props.value
+  })
 }
 
 const onBlur = () => {
@@ -43,8 +47,9 @@ const onBlur = () => {
 
 <template>
   <div class="string-edit" :class="{ 'is-multiline': opts.multiline }">
-    <textarea 
+    <textarea
       v-if="opts.multiline"
+      ref="inputEl"
       :value="value"
       :placeholder="opts.placeholder || ''"
       :rows="opts.rows || 4"
@@ -52,9 +57,10 @@ const onBlur = () => {
       @blur="onBlur"
       class="text-input textarea"
     ></textarea>
-    <input 
+    <input
       v-else
-      type="text" 
+      ref="inputEl"
+      type="text"
       :value="value" 
       :placeholder="opts.placeholder || ''"
       @input="onChange"
