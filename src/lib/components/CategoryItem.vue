@@ -22,12 +22,18 @@ const props = defineProps({
 const selectedCategorySlug = inject('selectedCategorySlug')
 const searchQuery = inject('searchQuery')
 const specification = inject('specification')
+const settings = inject('settings')
 
 const isSelected = computed(() => {
   const selectedTopLevel = selectedCategorySlug.value.split('.')[0]
   return selectedTopLevel === props.category.slug
 })
-const hasSubcategories = computed(() => props.category.categories && props.category.categories.length > 0)
+const visibleSubCategories = computed(() =>
+  (props.category.categories || []).filter(sub =>
+    typeof sub.show === 'function' ? sub.show(settings.value) : true
+  )
+)
+const hasSubcategories = computed(() => visibleSubCategories.value.length > 0)
 const isExpanded = computed(() => isSelected.value || (searchQuery.value && props.category.hasSearchMatch))
 
 const nonMatchedStyle = computed(() => {
@@ -66,9 +72,9 @@ const selectCategory = () => {
 
     <transition name="expand">
       <div class="subcategories-list" v-if="hasSubcategories && !collapsed && isExpanded">
-        <SubCategoryItem 
-          v-for="sub in category.categories" 
-          :key="sub.slug" 
+        <SubCategoryItem
+          v-for="sub in visibleSubCategories"
+          :key="sub.slug"
           :category="sub" 
           :parentSlug="category.slug"
         />
