@@ -90,6 +90,13 @@ const specs = {
         type: TYPES.KeyInput,
         default: { ctrl: true, shift: false, alt: false, meta: false, key: 'e' }
       },
+      multipleExportShortcuts: {
+        name: 'Multiple Export Shortcuts',
+        desc: 'Multiple shortcuts for exporting',
+        cats: ['ui.general'],
+        type: TYPES.KeysInput,
+        default: [{ ctrl: true, key: 'e' }]
+      },
       customMidiDevice: {
         name: 'External Controller',
         desc: 'Click to capture input from your connected device',
@@ -169,6 +176,7 @@ const settingsState = createSettings(specs.default, {
   licenseExpiry: '2026-12-31',
   dailyBackupTime: '03:00',
   exportShortcut: { ctrl: true, shift: false, alt: false, meta: false, key: 'e' },
+  multipleExportShortcuts: [{ ctrl: true, key: 'e' }],
   customMidiDevice: '',
   themeColor: '#ff4081',
   masterVolume: 80

@@ -58,7 +58,7 @@ const onKeyDown = (e) => {
     shift: e.shiftKey,
     alt: e.altKey,
     meta: e.metaKey,
-    key: e.key
+    key: e.key.toLowerCase()
   }
 
   update(newValue)

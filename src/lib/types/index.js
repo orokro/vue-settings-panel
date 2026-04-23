@@ -8,6 +8,7 @@ import ImageEdit from './ImageEdit.vue'
 import DateEdit from './DateEdit.vue'
 import TimeEdit from './TimeEdit.vue'
 import KeyInputEdit from './KeyInputEdit.vue'
+import KeysInputEdit from './KeysInputEdit.vue'
 import GenericInputEdit from './GenericInputEdit.vue'
 
 export const TYPES = {
@@ -70,6 +71,12 @@ export const TYPES = {
     slug: 'key-input',
     defaultValue: { shift: false, ctrl: false, alt: false, meta: false, key: '' },
     component: KeyInputEdit,
+  },
+  KeysInput: {
+    name: 'Keyboard Shortcuts (Multiple)',
+    slug: 'keys-input',
+    defaultValue: [],
+    component: KeysInputEdit,
   },
   GenericInput: {
     name: 'Generic Input',
